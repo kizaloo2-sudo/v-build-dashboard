@@ -277,27 +277,27 @@ export default function Dashboard() {
               <table className="data-table">
                 <thead>
                   <tr>
+                    <th>รหัส</th>
                     <th>ชื่อ</th>
                     <th>ประเภท</th>
-                    <th>สถานะ</th>
                     <th className="hide-mobile">พื้นที่</th>
                     <th className="hide-mobile">Progress</th>
-                    <th className="hide-mobile">รหัส</th>
+                    <th className="hide-mobile">สถานะ</th>
                   </tr>
                 </thead>
                 <tbody>
                   {households.map(h => (
                     <tr key={h.id}>
+                      <td>{h.household_code}</td>
                       <td>{h.head_of_household}</td>
                       <td>
                         <span className={'type-badge ' + (h.case_type?.toLowerCase() || '')}>
                           {h.case_type}
                         </span>
                       </td>
-                      <td><span className="status-badge">{h.status}</span></td>
                       <td className="hide-mobile">{h.zones?.name || '-'}</td>
                       <td className="hide-mobile">{h.progress}%</td>
-                      <td className="hide-mobile">{h.household_code}</td>
+                      <td className="hide-mobile"><span className="status-badge">{h.status}</span></td>
                     </tr>
                   ))}
                 </tbody>
@@ -406,8 +406,8 @@ export default function Dashboard() {
                   <tr>
                     <th>ผู้บริจาค</th>
                     <th>วัสดุ</th>
-                    <th>จำนวน</th>
                     <th className="hide-mobile">ประเภท</th>
+                    <th className="hide-mobile">จำนวน</th>
                     <th className="hide-mobile">วันที่</th>
                   </tr>
                 </thead>
@@ -416,8 +416,8 @@ export default function Dashboard() {
                     <tr key={d.id}>
                       <td>{d.donor_name}</td>
                       <td>{d.materials?.name || '-'}</td>
-                      <td>{formatNumber(d.quantity)} {d.unit}</td>
                       <td className="hide-mobile">{d.donor_type === 'organization' ? 'องค์กร' : d.donor_type === 'government' ? 'ภาครัฐ' : 'บุคคล'}</td>
+                      <td className="hide-mobile">{formatNumber(d.quantity)} {d.unit}</td>
                       <td className="hide-mobile">{new Date(d.received_date).toLocaleDateString('th-TH')}</td>
                     </tr>
                   ))}
