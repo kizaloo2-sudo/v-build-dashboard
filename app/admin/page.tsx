@@ -33,16 +33,6 @@ export default function AdminDashboard() {
     setLoading(false)
   }
 
-  if (loading) {
-    return (
-      <div className="animate-fadeIn">
-        <div className="hero-stats">
-          <div className="hero-card"><div className="hero-label">Loading...</div></div>
-        </div>
-      </div>
-    )
-  }
-
   return (
     <div className="animate-fadeIn">
       <div className="hero-stats">

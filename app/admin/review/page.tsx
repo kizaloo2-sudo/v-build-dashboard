@@ -129,10 +129,6 @@ export default function ReviewQueue() {
     return true
   })
 
-  if (loading) {
-    return <div className="animate-fadeIn"><div className="card"><div className="card-body">Loading...</div></div></div>
-  }
-
   return (
     <div className="animate-fadeIn">
       <div className="hero-stats">
