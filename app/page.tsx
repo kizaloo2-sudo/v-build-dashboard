@@ -278,13 +278,6 @@ export default function Dashboard() {
     .sort((a, b) => b.still_need - a.still_need)
     .slice(0, 4)
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-white">Loading...</div>
-      </div>
-    )
-  }
 
   return (
     <div className="min-h-screen">
