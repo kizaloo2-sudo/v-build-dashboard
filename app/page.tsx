@@ -75,154 +75,48 @@ function formatNumber(num: number): string {
   return new Intl.NumberFormat('th-TH').format(num)
 }
 
-function VerticalBarChart({ data }: { data: ZoneData[] }) {
+function HorizontalBarChart({ data }: { data: ZoneData[] }) {
   const maxTotal = Math.max(...data.map(d => d.total), 1)
-  const [tooltip, setTooltip] = useState<{ text: string; value: number; x: number; y: number } | null>(null)
-
-  const containerStyle: React.CSSProperties = {
-    padding: '24px',
-    position: 'relative'
-  }
-
-  const chartStyle: React.CSSProperties = {
-    display: 'flex',
-    alignItems: 'flex-end',
-    justifyContent: 'space-around',
-    height: '320px'
-  }
-
-  const itemWrapperStyle: React.CSSProperties = {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center'
-  }
-
-  const stackStyle: React.CSSProperties = {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    height: '260px',
-    justifyContent: 'flex-end',
-    gap: '8px'
-  }
-
-  const labelStyle: React.CSSProperties = {
-    fontSize: '12px',
-    color: '#888',
-    textAlign: 'center',
-    marginTop: '16px'
-  }
-
-  const totalStyle: React.CSSProperties = {
-    fontSize: '13px',
-    fontWeight: 700,
-    color: '#fff',
-    marginBottom: '6px'
-  }
-
-  const tooltipStyle: React.CSSProperties = {
-    position: 'fixed',
-    background: '#0a0a0a',
-    border: '1px solid #3b82f6',
-    borderRadius: '8px',
-    padding: '12px 16px',
-    pointerEvents: 'none',
-    zIndex: 1000,
-    left: tooltip ? tooltip.x + 'px' : 0,
-    top: tooltip ? tooltip.y + 'px' : 0,
-    transform: 'translate(-50%, -100%)',
-    marginTop: '-10px'
-  }
-
-  const tooltipTextStyle: React.CSSProperties = {
-    fontSize: '13px',
-    color: '#888'
-  }
-
-  const tooltipValueStyle: React.CSSProperties = {
-    fontSize: '14px',
-    fontWeight: 700,
-    color: '#60a5fa',
-    marginLeft: '4px'
-  }
-
-  const handleMouseEnter = (e: React.MouseEvent, type: string, value: number) => {
-    const rect = e.currentTarget.getBoundingClientRect()
-    setTooltip({
-      text: type,
-      value: value,
-      x: rect.left + rect.width / 2,
-      y: rect.top
-    })
-  }
-
-  const handleMouseLeave = () => {
-    setTooltip(null)
-  }
 
   if (data.length === 0) return null
 
   return (
-    <div style={containerStyle}>
-      <div style={chartStyle}>
-        {data.map((item) => {
-          const scale = 220 / maxTotal
-          const repairHeight = Math.max(item.repair * scale, item.repair > 0 ? 28 : 0)
-          const rebuildHeight = Math.max(item.rebuild * scale, item.rebuild > 0 ? 28 : 0)
+    <div className="horizontal-chart">
+      {data.map((item) => {
+        const rebuildPct = Math.round((item.rebuild / maxTotal) * 100)
+        const repairPct = Math.round((item.repair / maxTotal) * 100)
 
-          const repairBarStyle: React.CSSProperties = {
-            width: '22px',
-            height: repairHeight + 'px',
-            background: 'linear-gradient(180deg, #93c5fd 0%, #60a5fa 100%)',
-            borderRadius: '11px',
-            minHeight: item.repair > 0 ? '28px' : '0px',
-            boxShadow: '0 0 12px rgba(96, 165, 250, 0.3)',
-            cursor: 'pointer',
-            transition: 'transform 0.2s'
-          }
-
-          const rebuildBarStyle: React.CSSProperties = {
-            width: '22px',
-            height: rebuildHeight + 'px',
-            background: 'linear-gradient(180deg, #3b82f6 0%, #1e3a8a 100%)',
-            borderRadius: '11px',
-            minHeight: item.rebuild > 0 ? '28px' : '0px',
-            boxShadow: '0 0 12px rgba(30, 58, 138, 0.4)',
-            cursor: 'pointer',
-            transition: 'transform 0.2s'
-          }
-
-          return (
-            <div key={item.zone} style={itemWrapperStyle}>
-              <div style={stackStyle}>
-                <span style={totalStyle}>{item.total}</span>
+        return (
+          <div key={item.zone} className="chart-row">
+            <div className="chart-label">{item.zone}</div>
+            <div className="chart-bar-container">
+              <div className="chart-bar-stack">
                 {item.rebuild > 0 && (
-                  <div
-                    style={rebuildBarStyle}
-                    onMouseEnter={(e) => handleMouseEnter(e, 'Rebuild:', item.rebuild)}
-                    onMouseLeave={handleMouseLeave}
-                  ></div>
+                  <div className="chart-bar rebuild" data-width={rebuildPct}>
+                    {item.rebuild}
+                  </div>
                 )}
                 {item.repair > 0 && (
-                  <div
-                    style={repairBarStyle}
-                    onMouseEnter={(e) => handleMouseEnter(e, 'Repair:', item.repair)}
-                    onMouseLeave={handleMouseLeave}
-                  ></div>
+                  <div className="chart-bar repair" data-width={repairPct}>
+                    {item.repair}
+                  </div>
                 )}
               </div>
-              <span style={labelStyle}>{item.zone}</span>
+              <span className="chart-total">{item.total}</span>
             </div>
-          )
-        })}
-      </div>
-
-      {tooltip && (
-        <div style={tooltipStyle}>
-          <span style={tooltipTextStyle}>{tooltip.text}</span>
-          <span style={tooltipValueStyle}>{tooltip.value}</span>
+          </div>
+        )
+      })}
+      <div className="chart-legend">
+        <div className="legend-item">
+          <span className="legend-dot rebuild"></span>
+          <span>Rebuild</span>
         </div>
-      )}
+        <div className="legend-item">
+          <span className="legend-dot repair"></span>
+          <span>Repair</span>
+        </div>
+      </div>
     </div>
   )
 }
@@ -230,7 +124,6 @@ function VerticalBarChart({ data }: { data: ZoneData[] }) {
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState('overview')
   const [loading, setLoading] = useState(true)
-
   const [zones, setZones] = useState<Zone[]>([])
   const [households, setHouseholds] = useState<Household[]>([])
   const [materials, setMaterials] = useState<Material[]>([])
@@ -255,6 +148,8 @@ export default function Dashboard() {
     setLoading(false)
   }
 
+  if (loading) return null
+
   const totalHouseholds = households.length
   const rebuildCount = households.filter(h => h.case_type === 'REBUILD').length
   const repairCount = households.filter(h => h.case_type === 'REPAIR').length
@@ -278,11 +173,9 @@ export default function Dashboard() {
     .sort((a, b) => b.still_need - a.still_need)
     .slice(0, 4)
 
-
   return (
     <div className="min-h-screen">
       <div className="max-w-7xl mx-auto">
-
         <div className="tab-navigation">
           <button className={'tab-btn ' + (activeTab === 'overview' ? 'active' : '')} onClick={() => setActiveTab('overview')}>ภาพรวม</button>
           <button className={'tab-btn ' + (activeTab === 'households' ? 'active' : '')} onClick={() => setActiveTab('households')}>ครัวเรือน</button>
@@ -373,7 +266,7 @@ export default function Dashboard() {
                 <div className="card-title">Cases by Zone</div>
               </div>
               <div className="card-body">
-                <VerticalBarChart data={zoneData} />
+                <HorizontalBarChart data={zoneData} />
               </div>
             </div>
 
@@ -383,7 +276,14 @@ export default function Dashboard() {
               </div>
               <table className="data-table">
                 <thead>
-                  <tr><th>รหัส</th><th>ชื่อ</th><th>พื้นที่</th><th>ประเภท</th><th>Progress</th><th>สถานะ</th></tr>
+                  <tr>
+                    <th>รหัส</th>
+                    <th>ชื่อ</th>
+                    <th>พื้นที่</th>
+                    <th>ประเภท</th>
+                    <th>Progress</th>
+                    <th>สถานะ</th>
+                  </tr>
                 </thead>
                 <tbody>
                   {households.map(h => (
@@ -391,7 +291,11 @@ export default function Dashboard() {
                       <td>{h.household_code}</td>
                       <td>{h.head_of_household}</td>
                       <td>{h.zones?.name || '-'}</td>
-                      <td><span className={'type-badge ' + (h.case_type?.toLowerCase() || '')}>{h.case_type}</span></td>
+                      <td>
+                        <span className={'type-badge ' + (h.case_type?.toLowerCase() || '')}>
+                          {h.case_type}
+                        </span>
+                      </td>
                       <td>{h.progress}%</td>
                       <td><span className="status-badge">{h.status}</span></td>
                     </tr>
@@ -499,7 +403,13 @@ export default function Dashboard() {
               </div>
               <table className="data-table">
                 <thead>
-                  <tr><th>ผู้บริจาค</th><th>ประเภท</th><th>วัสดุ</th><th>จำนวน</th><th>วันที่</th></tr>
+                  <tr>
+                    <th>ผู้บริจาค</th>
+                    <th>ประเภท</th>
+                    <th>วัสดุ</th>
+                    <th>จำนวน</th>
+                    <th>วันที่</th>
+                  </tr>
                 </thead>
                 <tbody>
                   {donations.map(d => (
@@ -516,7 +426,6 @@ export default function Dashboard() {
             </div>
           </div>
         )}
-
       </div>
     </div>
   )
